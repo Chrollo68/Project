@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:crypto/crypto.dart';
 import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'home_page.dart';
@@ -21,11 +22,15 @@ class _LoginPageState extends State<LoginPage> {
     setState(() => _isLoading = true);
 
     try {
+      final plainPassword = _passwordController.text;
+      final clientHash = sha256.convert(utf8.encode(plainPassword)).toString();
+
       final response = await http.post(
         Uri.parse("http://localhost/cividesk_api/login.php"),
         body: {
           "username": _emailController.text,
-          "password": _passwordController.text,
+          "password": plainPassword,
+          "password_hash": clientHash,
         },
       );
 
